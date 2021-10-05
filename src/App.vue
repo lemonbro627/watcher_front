@@ -11,12 +11,12 @@
       <div class="wrapper_content">
         <div class="wrapper_content__photo">
           <div class="wrapper_content__photo_text"><h2>{{ this.textBeforePhoto }}</h2></div>
-          <div class="wrapper_content__photo_photo"><img class="photo_content" ref="photo"/></div>
+          <div class="wrapper_content__photo_photo"><img class="photo_content" alt="" ref="photo"/></div>
           <div class="wrapper_content__photo_text"><h3>{{ this.textAfterPhoto }}</h3></div>
         </div>
         <div class="wrapper_content__time">
           <h1 class="block_time">{{ ClockTime }}</h1>
-          <img class="medved" src="../public/medved.png"/>
+          <img alt="" class="medved" src="../public/medved.png"/>
           <h2 class="block_date">{{ ClockDate }}</h2>
         </div>
       </div>
@@ -105,8 +105,8 @@ export default {
 }
 .photo_content{
   align-content: center;
-  height: 600px;
-  width: 400px;
+  height: 620px;
+  width: 420px;
   margin-bottom: 10px;
   margin-top: 10px;
 }
