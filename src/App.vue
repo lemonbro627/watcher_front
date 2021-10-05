@@ -50,7 +50,7 @@ export default {
     },
     getWeather() {
       let axios = require('axios');
-      axios.get('https://api.openweathermap.org/data/2.5/weather?lat=58.006817&lon=56.1860062&lang=ru&units=metric&appid=')
+      axios.get('https://api.openweathermap.org/data/2.5/weather?lat=58.006817&lon=56.1860062&lang=ru&units=metric&appid=737f5257f034b715433c5446195947b4')
           .then((response) => {
             // console.log(response);
             this.weatherTemp = response.data.main.temp;
@@ -98,8 +98,6 @@ export default {
 .wrapper_top_date{
   width: 500px;
   height: 139px;
-  top: 81px;
-  left: 50px;
   font-family: HalvarBreit-Th,sans-serif;
   font-style: normal;
   font-weight: normal;
@@ -111,8 +109,6 @@ export default {
 .wrapper_top_time{
   width: 620px;
   height: 180px;
-  left: 649px;
-  top: 63px;
   padding-left: 100px;
   padding-right: 100px;
   font-family: HalvarBreit-Md,sans-serif;
@@ -126,8 +122,6 @@ export default {
 .wrapper_top_temp{
   width: 500px;
   height: 139px;
-  left: 1380px;
-  top: 81px;
   font-family: HalvarBreit-Th,sans-serif;
   font-style: normal;
   font-weight: normal;
