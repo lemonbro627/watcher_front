@@ -42,7 +42,7 @@ export default {
       axios.get('http://127.0.0.1:8000/getVideo')
           .then((response) => {
             // handle success
-            console.log(response.data);
+            // console.log(response.data);
             this.urlVideo = response.data.url
             this.$refs.video.src = response.data.url
           });
@@ -54,6 +54,10 @@ export default {
           .then((response) => {
             // console.log(response);
             this.weatherTemp = response.data.main.temp;
+            // console.log(this.weatherTemp, this.weatherTemp>0)
+            if (this.weatherTemp>0){
+              this.weatherTemp = '+' + this.weatherTemp.toString()
+            }
           });
     },
     getNow: function() {
@@ -66,7 +70,7 @@ export default {
   mounted() {
     this.getVideo()
     this.getWeather()
-    this.weather_timer = setInterval(this.getWeather, 3600000)
+    this.weather_timer = setInterval(this.getWeather, 60000)
     this.time_timer = setInterval(this.getNow, 1000)
   }
 }
