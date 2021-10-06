@@ -7,13 +7,14 @@
         <div class="wrapper_top_temp">{{ weatherTemp }}&#176;C</div>
       </div>
       <div class="wrapper_bottom">
-        <div class="wrapper_bottom_video">
+        <div class="unavailable_text" :style="displayUnavailableText">Добро пожаловать!</div>
+        <div class="wrapper_bottom_video" :style="displayWrapperBottom">
           <video ref="video" autoplay preload @ended="endedPlaying"/>
         </div>
         <div class="wrapper_bottom_sidebar">
-          <div class="wrapper_bottom_sidebar_news_title">Новость дня:</div>
-          <div class="wrapper_bottom_sidebar_news">С 1 октября в университете появится Яндекс.Такси</div>
-          <div class="wrapper_bottom_sidebar_logo">
+          <div class="wrapper_bottom_sidebar_news_title" :style="displayWrapperBottom">Новость дня:</div>
+          <div class="wrapper_bottom_sidebar_news" :style="displayWrapperBottom">{{ newsOfDay }}</div>
+          <div class="wrapper_bottom_sidebar_logo" :style="displayLogo">
             <img src="../public/company.png" alt="" class="company_logo"/>
           </div>
         </div>
@@ -34,6 +35,15 @@ export default {
 
       weatherTemp: null,
       weather_timer: '',
+
+      newsOfDay: null,
+      news_timer: '',
+
+      displayLogo: 'display: block',
+      displayWrapperBottom: 'display: block',
+      displayUnavailableText: 'display: none',
+
+      backend_timer: '',
     }
   },
   methods: {
@@ -45,31 +55,79 @@ export default {
             // console.log(response.data);
             this.urlVideo = response.data.url
             this.$refs.video.src = response.data.url
-          });
-      // console.log(this.urlVideo)
+          })
+      console.log(this.urlVideo)
     },
     getWeather() {
       let axios = require('axios');
       axios.get('https://api.openweathermap.org/data/2.5/weather?lat=58.006817&lon=56.1860062&lang=ru&units=metric&appid=')
           .then((response) => {
             // console.log(response);
-            this.weatherTemp = response.data.main.temp;
+            this.weatherTemp = Math.round(response.data.main.temp);
             // console.log(this.weatherTemp, this.weatherTemp>0)
             if (this.weatherTemp>0){
               this.weatherTemp = '+' + this.weatherTemp.toString()
             }
           });
     },
-    getNow: function() {
-      [this.ClockDate, this.ClockTime] = ((l,d) => [d.toLocaleDateString(l).slice(0,-5), d.toLocaleTimeString(l).slice(0,-3)])('ru-RU', new Date());    },
+    getNewsOfDay(){
+      let axios = require('axios');
+      axios.get('http://127.0.0.1:8000/getNewsOfDay')
+          .then((response) => {
+            this.newsOfDay = response.data.string;
+            if (this.newsOfDay.length > 85){
+              this.displayLogo = 'display: none'
+            }
+            else {
+              this.displayLogo = 'display: block'
+            }
+          })
+    },
+    isRefreshNews(){
+      if (this.ClockTime === '05:00'){
+        this.getNewsOfDay();
+      }
+    },
+    getNow() {
+      [this.ClockDate, this.ClockTime] = ((l,d) => [d.toLocaleDateString(l).slice(0,-5), d.toLocaleTimeString(l).slice(0,-3)])('ru-RU', new Date());
+      if (this.ClockDate[0] === '0'){
+        this.ClockDate = this.ClockDate.slice(1,)
+      }
+    },
     endedPlaying(){
       // console.log("ended");
       this.getVideo();
-    }
+    },
+    isBackAvailable(){
+      let axios = require('axios')
+      axios.get('http://127.0.0.1:8000/')
+          .then((response) => {
+            console.log(response)
+            if (this.displayWrapperBottom === 'display: none'){
+              this.getVideo()
+              this.displayWrapperBottom = 'display: block'
+              this.displayUnavailableText = 'display: none'
+              this.displayLogo = 'display: block; padding-left: 100px; padding-top: 50px'
+              if (this.newsOfDay === null){
+                this.getNewsOfDay()
+              }
+            }
+          })
+          .catch((error)=>{
+            this.displayLogo = 'display: block; padding-left: 1380px; padding-top: 684px'
+            this.displayWrapperBottom = 'display: none'
+            this.displayUnavailableText = 'display: block'
+            console.log(error)
+      })
+    },
   },
   mounted() {
     this.getVideo()
     this.getWeather()
+    this.getNewsOfDay()
+    this.isBackAvailable()
+    this.backend_timer = setInterval(this.isBackAvailable, 2000)
+    this.news_timer = setInterval(this.isRefreshNews, 60000)
     this.weather_timer = setInterval(this.getWeather, 60000)
     this.time_timer = setInterval(this.getNow, 1000)
   }
@@ -153,6 +211,16 @@ export default {
   color: #C62E3E;
   padding-top: 80px;
 }
+.unavailable_text{
+  font-family: PermianSansTypeface,sans-serif;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 195px;
+  line-height: 63px;
+  color: #C62E3E;
+  padding-top: 340px;
+  position: absolute;
+}
 .wrapper_bottom_sidebar_news{
   padding-left: 100px;
   padding-top: 40px;
@@ -168,6 +236,8 @@ export default {
   padding-left: 100px;
   padding-top: 50px;
   width: 440px;
+  display: block;
+  position: absolute;
 }
 .company_logo{
   width: 440px;
