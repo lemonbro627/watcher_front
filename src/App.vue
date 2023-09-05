@@ -2155,7 +2155,7 @@ export default {
   methods: {
     getVideo() {
       let axios = require('axios');
-      axios.get('http://127.0.0.1:8000/getVideo')
+      axios.get('http://infoadmin.psu.local/getVideo')
           .then((response) => {
             // handle success
             // console.log(response.data);
