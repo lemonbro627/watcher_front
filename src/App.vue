@@ -1,6 +1,9 @@
 <template>
   <div id="app">
-    <div class="wrapper">
+    <div class="wrapper_fullscreen_video" :style="displayFullscreen" >
+        <video ref="video_big" autoplay muted preload @ended="endedPlaying"/>
+    </div>
+    <div class="wrapper" :style="displayAllContent">
       <div class="wrapper_top">
         <div class="wrapper_top_date">{{ ClockDate }}</div>
         <div class="wrapper_top_time">{{ ClockTime }}</div>
@@ -2109,7 +2112,7 @@
           </div>
         </div>
         <div class="wrapper_bottom_video" :style="displayWrapperBottom">
-          <video ref="video" autoplay preload @ended="endedPlaying"/>
+          <video ref="video_small" autoplay muted preload @ended="endedPlaying"/>
         </div>
         <div class="wrapper_bottom_sidebar">
           <div class="wrapper_bottom_sidebar_news_title" :style="displayWrapperBottom">Новость дня:</div>
@@ -2129,6 +2132,7 @@ export default {
   data() {
     return {
       urlVideo: null,
+      isFullscreen: null,
       ClockDate: null,
       ClockTime: null,
       time_timer: '',
@@ -2142,6 +2146,8 @@ export default {
       displayLogo: 'display: block',
       displayWrapperBottom: 'display: block',
       displayUnavailableText: 'display: none',
+      displayFullscreen: 'display: none',
+      displayAllContent: '',
 
       backend_timer: '',
     }
@@ -2153,10 +2159,21 @@ export default {
           .then((response) => {
             // handle success
             // console.log(response.data);
+            this.isFullscreen = false
             this.urlVideo = response.data.url
-            this.$refs.video.src = response.data.url
+            this.isFullscreen = response.data.is_fullscreen
+            if (this.isFullscreen) {
+              this.displayAllContent = 'display: none'
+              this.displayFullscreen = ''
+            } else {
+              this.displayAllContent = ''
+              this.displayFullscreen = 'display: none'
+            }
+            this.$refs.video_small.src = response.data.url
+            this.$refs.video_big.src = response.data.url
+            console.log(this.urlVideo)
+            console.log(this.isFullscreen)
           })
-      console.log(this.urlVideo)
     },
     getWeather() {
       let axios = require('axios');
@@ -2172,7 +2189,7 @@ export default {
     },
     getNewsOfDay(){
       let axios = require('axios');
-      axios.get('http://127.0.0.1:8000/getNewsOfDay')
+      axios.get('http://infoadmin.psu.local/getNewsOfDay')
           .then((response) => {
             this.newsOfDay = response.data.string;
             if (this.newsOfDay.length > 85){
@@ -2200,7 +2217,7 @@ export default {
     },
     isBackAvailable(){
       let axios = require('axios')
-      axios.get('http://127.0.0.1:8000/status')
+      axios.get('http://infoadmin.psu.local/status')
           .then((response) => {
             console.log(response)
             if (this.displayWrapperBottom === 'display: none'){
@@ -2256,6 +2273,16 @@ export default {
 }
 body{
   background-color: #251616;
+}
+video{
+  width: auto;
+  height: auto;
+  min-height: 99%;
+  min-width: 99%;
+  padding-top: 0.3%;
+  padding-left: 0.5%;
+  align-content: center;
+  vertical-align: center;
 }
 .wrapper_top{
   display: flex;
@@ -2323,6 +2350,10 @@ body{
   width: 1280px;
   height: 720px;
   padding-top: 80px;
+}
+.wrapper_fullscreen_video {
+  width: 100vw;
+  height: 100vh;
 }
 .wrapper_bottom{
   flex-direction: row;
